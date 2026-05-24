@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load book_tags %}
+
+{% block title %}Список корзин{% endblock %}
+
+{% block content %}
+<h2>🛒 Список корзин покупателей</h2>
+
+{% if carts %}
+    <style>
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .cart-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .cart-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .cart-table tr:hover {
+            background: #f5f5f5;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+        }
+        .status-new { background: #3498db; }
+        .status-processing { background: #f39c12; }
+        .status-completed { background: #27ae60; }
+        .status-cancelled { background: #e74c3c; }
+        .btn-small {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+        .btn-small:hover {
+            background: #2980b9;
+        }
+    </style>
+    
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Покупатель</th>
+                <th>Email</th>
+                <th>Кол-во товаров</th>  <!-- ОТОБРАЖЕНИЕ КОЛИЧЕСТВА -->
+                <th>Общая сумма</th>
+                <th>Статус</th>
+                <th>Дата создания</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart in carts %}
+            <tr>
+                <td>#{{ cart.id }}</td>
+                <td>{{ cart.customer.name }}</td>
+                <td>{{ cart.customer.email }}</td>
+                <td>{{ cart.total_items }} шт.</td>  <!-- КОЛИЧЕСТВО ТОВАРОВ -->
+                <td>{{ cart.total_price|price_format }}</td>
+                <td>
+                    <span class="status-badge status-{{ cart.status }}">
+                        {{ cart.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ cart.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'catalog:cart_detail' cart.id %}" class="btn-small">Подробнее</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p style="margin-top: 20px;"><strong>Всего корзин:</strong> {{ carts|length }}</p>
+{% else %}
+    <p>Корзины не найдены. Создайте их через админ-панель.</p>
+{% endif %}
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'catalog:book_list' %}" class="btn">📖 Перейти в каталог книг</a>
+    <a href="/admin/catalog/cart/" class="btn">⚙️ Управлять корзинами в админке</a>
+</div>
+{% endblock %}

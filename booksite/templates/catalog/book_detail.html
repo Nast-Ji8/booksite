@@ -1,33 +1,28 @@
 {% extends "base.html" %}
 {% load book_tags %}
 
-{% block title %}{{ book.title }}{% endblock %}
+{% block title %}{{ book.name }}{% endblock %}
 
 {% block content %}
-<!-- 1. ВСТРОЕННЫЙ ФИЛЬТР: upper - делает все буквы ЗАГЛАВНЫМИ -->
-<h2>{{ book.title|upper }}</h2>
+<h2>{{ book.name|upper }}</h2>
 
-<div style="background: #f9f9f9; border: 1px solid #ddd; padding: 20px; border-radius: 5px;">
-    <p><strong>Автор:</strong> {{ book.author.name }}</p>
-    <p><strong>Издательство:</strong> {{ book.publisher.name }}</p>
-    
-    <!-- 2. ВСТРОЕННЫЙ ФИЛЬТР: lower - делает все буквы маленькими -->
-    <p><strong>ISBN:</strong> {{ book.isbn|lower }}</p>
-    
-    <!-- 3. ВСТРОЕННЫЙ ФИЛЬТР: date - форматирует дату -->
-    <p><strong>Год публикации:</strong> {{ book.publication_date|date:"d.m.Y" }}</p>
-    
-    <p><strong>Страниц:</strong> {{ book.pages }}</p>
-    
-    <!-- 4. КАСТОМНЫЙ ФИЛЬТР: price_format - добавляет ₽ -->
+<div style="background: white; padding: 20px; border-radius: 10px;">
+    <p><strong>Название:</strong> {{ book.name }}</p>
+    {% if book.author %}
+        <p><strong>Автор:</strong> {{ book.author }}</p>
+    {% endif %}
+    {% if book.publisher %}
+        <p><strong>Издательство:</strong> {{ book.publisher }}</p>
+    {% endif %}
+    {% if book.pages %}
+        <p><strong>Страниц:</strong> {{ book.pages }}</p>
+    {% endif %}
     <p><strong>Цена:</strong> <span class="price">{{ book.price|price_format }}</span></p>
-    
-    <!-- 5. КАСТОМНЫЙ ФИЛЬТР: book_age - вычисляет возраст книги -->
-    <p><strong>Возраст книги:</strong> {{ book.publication_date|book_age }} лет</p>
-    
-    <!-- 6. КАСТОМНЫЙ ТЕГ: current_year - показывает текущий год -->
-    <p><strong>Год добавления в каталог:</strong> {% current_year %}</p>
+    <p><strong>В наличии:</strong> {{ book.stock }} шт.</p>
+    <p><strong>Описание:</strong> {{ book.description|default:"Нет описания" }}</p>
+    <p><strong>Добавлена в каталог:</strong> {{ book.created_at|date:"d.m.Y" }}</p>
 </div>
 
-<a href="{% url 'catalog:book_list' %}" class="btn" style="margin-top: 20px;">← Назад к списку</a>
+<a href="{% url 'catalog:book_list' %}" class="btn" style="margin-top: 20px;">← Назад к каталогу</a>
+<a href="{% url 'catalog:cart_list' %}" class="btn" style="margin-top: 20px;">🛒 Перейти к корзинам</a>
 {% endblock %}

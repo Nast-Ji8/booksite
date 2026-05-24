@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load book_tags %}
+
+{% block title %}Корзина #{{ cart.id }}{% endblock %}
+
+{% block content %}
+<h2>🛒 Корзина #{{ cart.id }}</h2>
+
+<div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+    <h3>Информация о покупателе</h3>
+    <p><strong>Имя:</strong> {{ cart.customer.name }}</p>
+    <p><strong>Email:</strong> {{ cart.customer.email }}</p>
+    <p><strong>Телефон:</strong> {{ cart.customer.phone|default:"Не указан" }}</p>
+    <p><strong>Адрес:</strong> {{ cart.customer.address|default:"Не указан" }}</p>
+</div>
+
+<div style="background: white; padding: 20px; border-radius: 10px;">
+    <h3>Товары в корзине</h3>
+    
+    {% if cart.cart_items.all %}
+        <table class="cart-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Цена</th>
+                    <th>Количество</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.cart_items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.price|price_format }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.item_total|price_format }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" style="text-align: right;">Итого:</th>
+                    <th>{{ cart.total_price|price_format }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    {% else %}
+        <p>В корзине нет товаров.</p>
+    {% endif %}
+</div>
+
+<div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+    <h3>Дополнительная информация</h3>
+    <p><strong>Статус:</strong> 
+        <span class="status-badge status-{{ cart.status }}">
+            {{ cart.get_status_display }}
+        </span>
+    </p>
+    <p><strong>Дата создания:</strong> {{ cart.created_at|date:"d.m.Y H:i:s" }}</p>
+    <p><strong>Последнее обновление:</strong> {{ cart.updated_at|date:"d.m.Y H:i:s" }}</p>
+</div>
+
+<a href="{% url 'catalog:cart_list' %}" class="btn" style="margin-top: 20px;">← Назад к списку корзин</a>
+{% endblock %}

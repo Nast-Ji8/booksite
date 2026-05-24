@@ -1,26 +1,38 @@
 {% extends "base.html" %}
 {% load book_tags %}
 
-{% block title %}Все книги{% endblock %}
+{% block title %}Книжный каталог{% endblock %}
 
 {% block content %}
-<h2>📖 Каталог книг</h2>
+<h2>📚 Книжный каталог</h2>
 
 {% if books %}
-    {% for book in books %}
-        <div class="book-card">
-            <h3>{{ book.title }}</h3>
-            <p><strong>Автор:</strong> {{ book.author.name }}</p>
-            <p><strong>Издатель:</strong> {{ book.publisher.name }}</p>
-            <p><strong>Год:</strong> {{ book.publication_date|date:"Y" }}</p>
-            <p><strong>Страниц:</strong> {{ book.pages }}</p>
-            <p class="price">{{ book.price|price_format }}</p>
-            <a href="{% url 'catalog:book_detail' book.id %}" class="btn">Подробнее</a>
-        </div>
-    {% endfor %}
+    <div class="book-grid">
+        {% for book in books %}
+            <div class="book-card">
+                <div class="book-title">
+                    <strong>{{ book.name|truncate_chars:30 }}</strong>
+                </div>
+                {% if book.author %}
+                    <p><strong>Автор:</strong> {{ book.author }}</p>
+                {% endif %}
+                {% if book.publisher %}
+                    <p><strong>Издательство:</strong> {{ book.publisher }}</p>
+                {% endif %}
+                {% if book.pages %}
+                    <p><strong>Страниц:</strong> {{ book.pages }}</p>
+                {% endif %}
+                <p><strong>Цена:</strong> <span class="price">{{ book.price|price_format }}</span></p>
+                <p><strong>В наличии:</strong> {{ book.stock }} шт.</p>
+                <a href="{% url 'catalog:book_detail' book.id %}" class="btn">Подробнее</a>
+            </div>
+        {% endfor %}
+    </div>
 {% else %}
-    <p>Книги не найдены.</p>
+    <p>Книги не найдены. Добавьте книги через <a href="/admin/">админ-панель</a>.</p>
 {% endif %}
 
-<p><strong>Всего книг:</strong> {{ books|length }}</p>
+<p style="margin-top: 20px;"><strong>Всего книг в каталоге:</strong> {{ books|length }}</p>
+
+<a href="{% url 'catalog:cart_list' %}" class="btn" style="margin-top: 20px;">🛒 Перейти к корзинам</a>
 {% endblock %}
