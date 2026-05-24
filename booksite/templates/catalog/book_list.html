@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load book_tags %}
+
+{% block title %}Все книги{% endblock %}
+
+{% block content %}
+<h2>📖 Каталог книг</h2>
+
+{% if books %}
+    {% for book in books %}
+        <div class="book-card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Автор:</strong> {{ book.author.name }}</p>
+            <p><strong>Издатель:</strong> {{ book.publisher.name }}</p>
+            <p><strong>Год:</strong> {{ book.publication_date|date:"Y" }}</p>
+            <p><strong>Страниц:</strong> {{ book.pages }}</p>
+            <p class="price">{{ book.price|price_format }}</p>
+            <a href="{% url 'catalog:book_detail' book.id %}" class="btn">Подробнее</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Книги не найдены.</p>
+{% endif %}
+
+<p><strong>Всего книг:</strong> {{ books|length }}</p>
+{% endblock %}

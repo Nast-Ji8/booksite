@@ -1,0 +1,17 @@
+<div class="book-card">
+    <div class="book-title">
+        {{ book.title|truncate_chars:30 }}
+        {% if book.is_new %}
+            <span class="new-badge">NEW!</span>
+        {% endif %}
+    </div>
+    <p><strong>Автор:</strong> {{ book.author.name }}</p>
+    <p><strong>Издатель:</strong> {{ book.publisher.name }}</p>
+    <p><strong>Год:</strong> {{ book.publication_date|date:"Y" }}</p>
+    <p><strong>Страниц:</strong> {{ book.pages }}</p>
+    {% if show_price %}
+        <p class="price">{{ book.price|price_format }}</p>
+    {% endif %}
+    <p><small>Возраст книги: {{ book.publication_date|book_age }} лет</small></p>
+    <a href="{% url 'book_detail' book.id %}" class="btn">Подробнее</a>
+</div>
