@@ -62,12 +62,16 @@ class Cart(models.Model):
     updated_at = models.DateTimeField('Дата обновления', auto_now=True)
     
     def total_price(self):
-        """Общая стоимость корзины"""
+        """Общая стоимость корзины (вычисляемое поле)"""
         return sum(item.product.price * item.quantity for item in self.cart_items.all())
     
     def total_items(self):
-        """Общее количество товаров в корзине"""
+        """Общее количество товаров в корзине (вычисляемое поле)"""
         return sum(item.quantity for item in self.cart_items.all())
+    
+    def is_active(self):
+        """Проверка: активна ли корзина (не завершена и не отменена)"""
+        return self.status not in ['completed', 'cancelled']
     
     def __str__(self):
         return f"Корзина {self.customer.name} - {self.created_at.strftime('%d.%m.%Y')}"

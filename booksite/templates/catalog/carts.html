@@ -29,6 +29,16 @@
         .cart-table tr:hover {
             background: #f5f5f5;
         }
+        
+        /* ✅ ВИЗУАЛЬНОЕ ВЫДЕЛЕНИЕ НЕАКТИВНЫХ КОРЗИН */
+        .cart-table tr.inactive {
+            background: #ffe6e6;
+            opacity: 0.8;
+        }
+        .cart-table tr.inactive:hover {
+            background: #ffcccc;
+        }
+        
         .status-badge {
             display: inline-block;
             padding: 3px 8px;
@@ -39,8 +49,29 @@
         }
         .status-new { background: #3498db; }
         .status-processing { background: #f39c12; }
-        .status-completed { background: #27ae60; }
+        .status-completed { background: #95a5a6; }  /* Серый для завершенных */
         .status-cancelled { background: #e74c3c; }
+        
+        .inactive-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        
+        .active-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        
         .btn-small {
             display: inline-block;
             background: #3498db;
@@ -61,27 +92,36 @@
                 <th>ID</th>
                 <th>Покупатель</th>
                 <th>Email</th>
-                <th>Кол-во товаров</th>  <!-- ОТОБРАЖЕНИЕ КОЛИЧЕСТВА -->
+                <th>Кол-во товаров</th>
                 <th>Общая сумма</th>
                 <th>Статус</th>
                 <th>Дата создания</th>
+                <th>Состояние</th>
                 <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             {% for cart in carts %}
-            <tr>
+            <!-- ✅ ДОБАВЛЕН КЛАСС "inactive" ДЛЯ НЕАКТИВНЫХ КОРЗИН -->
+            <tr class="{% if cart.status == 'completed' or cart.status == 'cancelled' %}inactive{% endif %}">
                 <td>#{{ cart.id }}</td>
                 <td>{{ cart.customer.name }}</td>
                 <td>{{ cart.customer.email }}</td>
-                <td>{{ cart.total_items }} шт.</td>  <!-- КОЛИЧЕСТВО ТОВАРОВ -->
-                <td>{{ cart.total_price|price_format }}</td>
+                <td>{{ cart.total_items }} шт.</td>
+                <td class="price">{{ cart.total_price|price_format }}</td>
                 <td>
                     <span class="status-badge status-{{ cart.status }}">
                         {{ cart.get_status_display }}
                     </span>
                 </td>
                 <td>{{ cart.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                    {% if cart.status == 'completed' or cart.status == 'cancelled' %}
+                        <span class="inactive-badge">❌ Неактивная</span>
+                    {% else %}
+                        <span class="active-badge">✅ Активная</span>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{% url 'catalog:cart_detail' cart.id %}" class="btn-small">Подробнее</a>
                 </td>
@@ -90,7 +130,10 @@
         </tbody>
     </table>
     
-    <p style="margin-top: 20px;"><strong>Всего корзин:</strong> {{ carts|length }}</p>
+    <p style="margin-top: 20px;">
+        <strong>Всего корзин:</strong> {{ carts|length }}<br>
+        <span style="background: #ffe6e6; padding: 2px 8px; border-radius: 3px;">🔴 Розовым выделены неактивные корзины</span>
+    </p>
 {% else %}
     <p>Корзины не найдены. Создайте их через админ-панель.</p>
 {% endif %}
